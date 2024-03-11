@@ -6,6 +6,7 @@ import { searchImages } from './js/pixabay-api.js';
 const form = document.querySelector('.form');
 const loader = document.querySelector(`.loader`);
 const loadMoreButton = document.querySelector('#load-more');
+const loadMoreMessage = document.querySelector('#load-more-end-message');
 let searchTerm;
 const imagesPerPage = 15;
 let totalPages;
@@ -32,15 +33,6 @@ async function loadImages(searchQuery, enableScrolling = false) {
     console.error('Search query is empty')
   }
   showLoading();
-  if (currentPage > totalPages) {
-    hideLoadMore();
-    iziToast.info({
-      position: 'topRight',
-      message: `We're sorry, but you've reached the end of search results.`,
-    });
-    hideLoading();
-    return;
-  }
   const { images, totalImages } = await searchImages(searchQuery.trim(), imagesPerPage, currentPage);
   totalPages = Math.ceil(totalImages / imagesPerPage);
   hideLoading();
@@ -53,6 +45,15 @@ async function loadImages(searchQuery, enableScrolling = false) {
   ++currentPage;
   renderGallery(images, enableScrolling);
   showLoadMore();
+
+  if (currentPage > totalPages) {
+    hideLoading();
+    hideLoadMore();
+    iziToast.info({
+      position: 'topRight',
+      message: `We're sorry, but you've reached the end of search results.`,
+    });
+  }
 }
 
 function handleSubmitSearch(event) {
